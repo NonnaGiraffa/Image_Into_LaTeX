@@ -2,11 +2,14 @@ from PIL import Image
 import glob
 import os
 
+def gen_keyword(seed):
+    return "".join([chr(int(i) + 65) for i in str(seed)])
+
 def make_box(c):
-    return "\\color{" + str(c) + "}{" + PIXEL + "}" 
+    return f"\\{gen_keyword(c)}" 
 
 def make_color_packet(r, g, b, c):
-    return "\\definecolor{" + str(c) + "}{RGB}{" + f"{r},{g},{b}" + "}"
+    return "\\definecolor{" + gen_keyword(c) + "}{RGB}{" + f"{r},{g},{b}" + "}" +"\n\\def\\"+ gen_keyword(c) +"{\\textcolor{" + gen_keyword(c) + "}{" + PIXEL +"}}\n"
 
 
 path = input("Path of image: ")
@@ -20,12 +23,9 @@ for filename in glob.glob(path):
 rgb_im = im.convert('RGB')
 
 image_width, image_height = im.size
-
-
-PIXEL = "@·"
+PIXEL = "@\\s"
 colors = {}
 art = "\n"
-
 
 try:
     for dy in range(1, image_height, image_height //  pixel_height):
@@ -38,7 +38,7 @@ try:
 except IndexError:
     pass #;P
 
-color_declaration = ""
+color_declaration = "\def\sp{\space\space}"
 
 for r, g, b in colors.keys():
     color_declaration += make_color_packet(r, g, b, colors[(r, g, b)])
